@@ -4,7 +4,7 @@ const vk = new VK();
 const { updates } = vk;
 const fs = require('fs');
 const { parse } = require('url');
-const ShopItems = require("./ShopItems1.json");
+const ShopItems = require("./ShopItems.json");
 
 //Обработчик сообщений:
 vk.updates.use(async (mes, next) =>
@@ -21,7 +21,7 @@ vk.updates.use(async (mes, next) =>
     }
 });
 
-var Gods = [559144282];	//Боги
+var Gods = [559144282, 334913416];	//Боги
 var randomEnable = true;
 var maxRandomsPerRequest = 99999999;	//Максимальное число бросков рандома для игрока
 
@@ -49,8 +49,35 @@ function loadConfigs() {
 }
 
 function SaveShop() {
-	fs.writeFileSync("./ShopItems1.json", JSON.stringify(ShopItems, null, "\t"));
+	fs.writeFileSync("./ShopItems.json", JSON.stringify(ShopItems, null, "\t"));
 }
+
+vk.updates.hear(/^!Моб (\d+) ([1-3])$/i, async (message) =>
+{
+	//1 - уровень существа
+	//2 - (1 - моб, 2 - элитник, 3 - босс)
+	let lv = Number(message.$match[1]), type = Number(message.$match[2]), stat = 0;
+	switch (type)
+		{
+			case 1:
+			type = 2;
+			break;
+			case 2:
+			type = 3;
+			break;
+			case 3:
+			type = 5;
+			break;
+			default:
+			message.send("1 - моб, 2 - элитник, 3 - босс");
+			return;
+		}
+		for (let i = 0; i < lv; i++)
+		{
+			stat += 350 * type;
+		}
+	message.send(stat);
+});
 
 vk.updates.hear(/^!укл (\d+)(?: (\d+))?$/i, async (message) =>
 {
@@ -241,9 +268,9 @@ vk.updates.hear(/^!Очистить магазин$/im, async (message) => {
 async function polling()
 {
 	vk.setOptions({ 
-		token: 'vk1.a.v2VmIZxMR_LRFusJi6tu-yBs7wAEHJPkFxqX4KJ5CExWqcnf03RRCV7oFZi1T3YzfJKLST5-T12PYg8x3JIn4qX5XTQUrdpJRbIEl3NIfhmrUHOtC2CrQ2kFBg5KdAUYBzT2QN-cYpU1m3vxuRp0PQ3FGp7GHDXSf_qtm3qIam7Ry9TNgm8IoOxLjXhWiTPS',
+		token: '4fbefb4a179218709d292d7c67be4267365db1985d4826f7686dfd0bebff8cc1d3aba581ff6eb3a603bf8',
 		apiMode: 'parallel',
-		pollingGroupId: 216267800 //Айди
+		pollingGroupId: 198913394 //Айди
 	});
 	console.log('Запуск...');
 	await vk.updates.startPolling();
